@@ -22,12 +22,11 @@ public class PokerHandApp {
     public static void main(String[] args) {
 
         pokerHands.forEach(h -> {
-            System.out.println("p1: " + h.substring(0 , h.length() / 2) + " p2: " + h.substring(h.length()/2).trim());
+//            System.out.println("p1: " + h.substring(0 , h.length() / 2) + " p2: " + h.substring(h.length()/2).trim());
             PokerHand p1 = new PokerHand(h.substring(0 , h.length() / 2));
             PokerHand p2 = new PokerHand(h.substring(h.length() / 2).trim());
-            System.out.println(p1);
-            System.out.println(p2);
-            System.out.println();
+
+//            System.out.println();
         });
 
     }

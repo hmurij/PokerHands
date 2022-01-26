@@ -2,9 +2,12 @@ package lt.lyra.pokerhand.model;
 
 import lt.lyra.pokerhand.type.CardFace;
 import lt.lyra.pokerhand.type.CardSuit;
+import lt.lyra.pokerhand.type.HandCombination;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class PokerHand represents player's poker hand. Poker hand parsed from String object passed
@@ -12,18 +15,46 @@ import java.util.List;
  */
 public class PokerHand {
     private final List<Card> pokerHand;
+    private final HandCombination handCombination;
 
     public PokerHand(String pokerHand) {
         this.pokerHand = parsePokerHand(pokerHand);
 
+        this.handCombination = evaluateHand();
+
     }
 
-    public List<Card> getPokerHand() {
-        return pokerHand;
+    private HandCombination evaluateHand() {
+        HandCombination combination = HandCombination.NO_PAIR;
+
+        if (isStraightFlush()) {
+            combination = HandCombination.STRAIGHT_FLUSH;
+        }
+
+
+        return combination;
     }
 
     /**
+     * Checks whether hand is Straight Flush – the highest possible hand.
+     * A straight flush consists of five cards of the same suit in sequence,
+     * such as 10, 9, 8, 7, 6 of hearts.
+     *
+     * @return true if hand is Straight Flush combination and false otherwise
+     */
+    private boolean isStraightFlush() {
+        int numberOfSuits = pokerHand.stream().collect(Collectors.groupingBy(Card::getSuit)).size();
+        List<Card> hand = new ArrayList<>(pokerHand);
+        hand.sort(Comparator.reverseOrder());
+        int difference = hand.get(0).getFace().getValue() - hand.get(hand.size() - 1).getFace().getValue();
+
+        return numberOfSuits == 1 && difference == 4;
+    }
+
+
+    /**
      * Parses poker hand from string
+     *
      * @param pokerHand string of cards in format "AS KD 3D JD 8H", assuming all strings are valid
      *                  representation of poker hand
      * @return list of {@link Card} objects representing player hand
@@ -47,20 +78,21 @@ public class PokerHand {
 
     /**
      * Parses card face from string
-     * @param cardFace string representation of card face one of
-     *             "2", "3", "4", "5", "6", "7", "8", "9", "10",
-     *             "J", "Q", "K", "A". Assuming all strings are valid.
+     *
+     * @param card string representation of card face one of
+     *                 "2", "3", "4", "5", "6", "7", "8", "9", "10",
+     *                 "J", "Q", "K", "A". Assuming all strings are valid.
      * @return parsed {@link CardFace} object
      */
-    private CardFace parseFace(String cardFace) {
+    private CardFace parseFace(String card) {
         CardFace[] faces = CardFace.values();
         CardFace face = CardFace.DEUCE;
 
         // parse card face
         try {
-            face = faces[Integer.parseInt(cardFace.substring(0, 1)) - 2];
+            face = faces[Integer.parseInt(card.substring(0, card.length() == 2 ? 1 : 2)) - 2];
         } catch (NumberFormatException e) {
-            switch (cardFace.substring(0, 1)) {
+            switch (card.substring(0, 1)) {
                 case "J":
                     face = faces[9];
                     break;
@@ -81,16 +113,17 @@ public class PokerHand {
 
     /**
      * Parses card suit from string
-     * @param cardSuit string representation of card suit one of
-     *             "H", "D", "C", "S". Assuming all strings are valid.
+     *
+     * @param card string representation of card suit one of
+     *                 "H", "D", "C", "S". Assuming all strings are valid.
      * @return parsed {@link CardSuit} object
      */
-    private CardSuit parseSuit(String cardSuit) {
+    private CardSuit parseSuit(String card) {
         CardSuit[] suits = CardSuit.values();
         CardSuit suit = CardSuit.HEARTS;
 
         // parse suit
-        switch (cardSuit.substring(1)) {
+        switch (card.substring(card.length() - 1)) {
             case "H":
                 suit = suits[0];
                 break;
@@ -107,7 +140,13 @@ public class PokerHand {
         return suit;
     }
 
+    public List<Card> getPokerHand() {
+        return pokerHand;
+    }
 
+    public HandCombination getHandCombination() {
+        return handCombination;
+    }
 
     @Override
     public String toString() {
