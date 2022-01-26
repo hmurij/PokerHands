@@ -119,6 +119,30 @@ public class PokerHandTest {
         assertNotEquals(ph.getHandCombination(), HandCombination.FLUSH);
     }
 
+    @Test
+    public void isPokerHandIsStraightTest(){
+        String hand = "TS 8H 9S 6S 7S";
+        PokerHand ph = new PokerHand(hand);
+
+        assertEquals(ph.getHandCombination(), HandCombination.STRAIGHT);
+
+        hand = "2C 5S 4D 3D 6H";
+        ph = new PokerHand(hand);
+        assertEquals(ph.getHandCombination(), HandCombination.STRAIGHT);
+    }
+
+    @Test
+    public void isPokerHandIsNotStraightTest(){
+        String hand = "TS 8H KS 6S 7S";
+        PokerHand ph = new PokerHand(hand);
+
+        assertNotEquals(ph.getHandCombination(), HandCombination.STRAIGHT);
+
+        hand = "AC 5S TD 3D 6H";
+        ph = new PokerHand(hand);
+        assertNotEquals(ph.getHandCombination(), HandCombination.STRAIGHT);
+    }
+
 }
 
 

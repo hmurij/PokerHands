@@ -38,6 +38,8 @@ public class PokerHand {
             combination = HandCombination.FULL_HOUSE;
         } else if (isFlush()) {
             combination = HandCombination.FLUSH;
+        } else if (isStraight()) {
+            combination = HandCombination.STRAIGHT;
         }
 
 
@@ -52,12 +54,21 @@ public class PokerHand {
      * @return true if hand is Straight Flush combination and false otherwise
      */
     private boolean isStraightFlush() {
+
         int numberOfSuits = pokerHand.stream().collect(Collectors.groupingBy(Card::getSuit)).size();
         List<Card> hand = new ArrayList<>(pokerHand);
         hand.sort(Comparator.reverseOrder());
-        int difference = hand.get(0).getFace().getValue() - hand.get(hand.size() - 1).getFace().getValue();
 
-        return numberOfSuits == 1 && difference == 4;
+        boolean straight = true;
+        for (int i = 1; i < hand.size(); i++) {
+            if (hand.get(i - 1).getFace().getValue() - hand.get(i).getFace().getValue() != 1) {
+                straight = false;
+                break;
+            }
+        }
+
+        return numberOfSuits == 1 && straight;
+
     }
 
     /**
@@ -80,9 +91,10 @@ public class PokerHand {
     /**
      * Checks whether hand is Full House - hand is made up of three cards of one rank and two cards of another rank,
      * such as three 8s and two 4s, or three aces and two 6s.
+     *
      * @return true if hand is Four House combination and false otherwise
      */
-    private boolean isFullHouse(){
+    private boolean isFullHouse() {
         var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getFace));
 
         boolean threeOfAKind = cardGroups.values().stream().anyMatch(g -> g.size() == 3);
@@ -99,9 +111,10 @@ public class PokerHand {
     /**
      * Checks whether hand is Flush - five cards, all of the same suit, but not all in sequence,
      * is a flush. An example is Q, 10, 7, 6, and 2 of clubs.
+     *
      * @return true if hand is Flush combination and false otherwise
      */
-    private boolean isFlush(){
+    private boolean isFlush() {
         var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getSuit));
 
         boolean found = cardGroups.values().size() == 1;
@@ -109,6 +122,34 @@ public class PokerHand {
         if (found) {
             highestCards = new ArrayList<>(pokerHand);
             highestCards.sort(Comparator.reverseOrder());
+        }
+
+        return found;
+    }
+
+    /**
+     * Checks whether hand is Straight - Five cards in sequence, but not all of the same suit is a straight.
+     * An example is 9S 8H 7C 6D 5H.
+     *
+     * @return true if hand is Straight combination and false otherwise
+     */
+    private boolean isStraight() {
+        int numberOfSuits = pokerHand.stream().collect(Collectors.groupingBy(Card::getSuit)).size();
+        List<Card> hand = new ArrayList<>(pokerHand);
+        hand.sort(Comparator.reverseOrder());
+
+        boolean straight = true;
+        for (int i = 1; i < hand.size(); i++) {
+            if (hand.get(i - 1).getFace().getValue() - hand.get(i).getFace().getValue() != 1) {
+                straight = false;
+                break;
+            }
+        }
+
+        boolean found = numberOfSuits > 1 && straight;
+
+        if (found) {
+            highestCards = hand;
         }
 
         return found;
@@ -207,7 +248,7 @@ public class PokerHand {
     }
 
     public List<Card> getPokerHand() {
-        return pokerHand;
+        return List.copyOf(pokerHand);
     }
 
     public HandCombination getHandCombination() {
