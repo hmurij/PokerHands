@@ -1,6 +1,6 @@
 package lt.lyra.pokerhand;
 
-import lt.lyra.pokerhand.type.CardSuit;
+import lt.lyra.pokerhand.type.HandCombination;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +22,7 @@ public class PokerHandApp {
 
 
     public static void main(String[] args) {
-        Arrays.stream(CardSuit.values()).forEach(s -> System.out.println(s + " : " + s.getSuit()));
+        Arrays.stream(HandCombination.values()).forEach(c -> System.out.println(c + " : " + c.getValue()));
 
     }
 
