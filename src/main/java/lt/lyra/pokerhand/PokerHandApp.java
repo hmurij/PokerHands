@@ -1,12 +1,13 @@
 package lt.lyra.pokerhand;
 
-import lt.lyra.pokerhand.type.HandCombination;
+import lt.lyra.pokerhand.model.Card;
+import lt.lyra.pokerhand.type.CardFace;
+import lt.lyra.pokerhand.type.CardSuit;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Reads file poker.txt 1000 lines. Each line in format 8C TS KC 9H 4S 7D 2S 5D 3S AC - representing
@@ -20,9 +21,18 @@ public class PokerHandApp {
         pokerHands = readHandsFromFile();
     }
 
-
     public static void main(String[] args) {
-        Arrays.stream(HandCombination.values()).forEach(c -> System.out.println(c + " : " + c.getValue()));
+        CardFace [] faces = CardFace.values();
+        CardSuit [] suits = CardSuit.values();
+
+        List<Card> deck = new ArrayList<>();
+
+        for (CardFace face : faces) {
+            Arrays.stream(suits).map(suit -> new Card(face, suit)).forEach(deck::add);
+        }
+
+        Collections.sort(deck, Comparator.reverseOrder());
+        deck.forEach(System.out::println);
 
     }
 
