@@ -71,6 +71,30 @@ public class PokerHandTest {
         assertNotEquals(ph.getHandCombination(), HandCombination.FOUR_OF_A_KIND);
     }
 
+    @Test
+    public void isPokerHandIsFullHouse(){
+        String hand = "6H 6S 6C KS KH";
+        PokerHand ph = new PokerHand(hand);
+
+        assertEquals(ph.getHandCombination(), HandCombination.FULL_HOUSE);
+
+        hand = "TH TD TC KD KS";
+        ph = new PokerHand(hand);
+        assertEquals(ph.getHandCombination(), HandCombination.FULL_HOUSE);
+    }
+
+    @Test
+    public void isPokerHandIsNotFullHouse(){
+        String hand = "6H 6S 5C KS KH";
+        PokerHand ph = new PokerHand(hand);
+
+        assertNotEquals(ph.getHandCombination(), HandCombination.FULL_HOUSE);
+
+        hand = "TH 9D TC KD KS";
+        ph = new PokerHand(hand);
+        assertNotEquals(ph.getHandCombination(), HandCombination.FULL_HOUSE);
+    }
+
 }
 
 

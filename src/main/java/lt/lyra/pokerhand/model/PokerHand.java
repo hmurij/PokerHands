@@ -34,6 +34,8 @@ public class PokerHand {
             combination = HandCombination.STRAIGHT_FLUSH;
         } else if (isFourOfAKind()) {
             combination = HandCombination.FOUR_OF_A_KIND;
+        } else if (isFullHouse()) {
+            combination = HandCombination.FULL_HOUSE;
         }
 
 
@@ -71,6 +73,25 @@ public class PokerHand {
         }
 
         return found;
+    }
+
+    /**
+     * Checks whether hand is Full House - hand is made up of three cards of one rank and two cards of another rank,
+     * such as three 8s and two 4s, or three aces and two 6s.
+     * @return true if hand is Four House combination and false otherwise
+     */
+    private boolean isFullHouse(){
+        var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getFace));
+
+        boolean threeOfAKind = cardGroups.values().stream().anyMatch(g -> g.size() == 3);
+        boolean pair = cardGroups.values().stream().anyMatch(g -> g.size() == 2);
+
+        if (threeOfAKind && pair) {
+            highestCards = new ArrayList<>(pokerHand);
+            highestCards.sort(Comparator.reverseOrder());
+        }
+
+        return threeOfAKind && pair;
     }
 
 
