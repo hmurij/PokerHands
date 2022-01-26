@@ -1,6 +1,6 @@
 package lt.lyra.pokerhand;
 
-import lt.lyra.pokerhand.type.CardFace;
+import lt.lyra.pokerhand.type.CardSuit;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,10 +22,7 @@ public class PokerHandApp {
 
 
     public static void main(String[] args) {
-//        System.out.println(pokerHands.size());
-//        pokerHands.forEach(System.out::println);
-
-        Arrays.stream(CardFace.values()).forEach(f -> System.out.println(f + " " + f.getValue()));
+        Arrays.stream(CardSuit.values()).forEach(s -> System.out.println(s + " : " + s.getSuit()));
 
     }
 
