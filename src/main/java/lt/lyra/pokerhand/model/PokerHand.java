@@ -36,6 +36,8 @@ public class PokerHand {
             combination = HandCombination.FOUR_OF_A_KIND;
         } else if (isFullHouse()) {
             combination = HandCombination.FULL_HOUSE;
+        } else if (isFlush()) {
+            combination = HandCombination.FLUSH;
         }
 
 
@@ -92,6 +94,24 @@ public class PokerHand {
         }
 
         return threeOfAKind && pair;
+    }
+
+    /**
+     * Checks whether hand is Flush - five cards, all of the same suit, but not all in sequence,
+     * is a flush. An example is Q, 10, 7, 6, and 2 of clubs.
+     * @return true if hand is Flush combination and false otherwise
+     */
+    private boolean isFlush(){
+        var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getSuit));
+
+        boolean found = cardGroups.values().size() == 1;
+
+        if (found) {
+            highestCards = new ArrayList<>(pokerHand);
+            highestCards.sort(Comparator.reverseOrder());
+        }
+
+        return found;
     }
 
 
