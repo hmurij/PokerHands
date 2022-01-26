@@ -1,6 +1,7 @@
 package lt.lyra.pokerhand;
 
 import lt.lyra.pokerhand.model.PokerHand;
+import lt.lyra.pokerhand.type.HandCombination;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,6 +26,16 @@ public class PokerHandApp {
 //            System.out.println("p1: " + h.substring(0 , h.length() / 2) + " p2: " + h.substring(h.length()/2).trim());
             PokerHand p1 = new PokerHand(h.substring(0 , h.length() / 2));
             PokerHand p2 = new PokerHand(h.substring(h.length() / 2).trim());
+
+            if(p1.getHandCombination() == HandCombination.FOUR_OF_A_KIND){
+                System.out.println(h.substring(0 , h.length() / 2));
+            }
+
+            if(p2.getHandCombination() == HandCombination.FOUR_OF_A_KIND){
+                System.out.println(h.substring(h.length() / 2).trim());
+            }
+
+
 
 //            System.out.println();
         });

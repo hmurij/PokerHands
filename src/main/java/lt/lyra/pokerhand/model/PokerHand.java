@@ -17,6 +17,9 @@ public class PokerHand {
     private final List<Card> pokerHand;
     private final HandCombination handCombination;
 
+    // utility field, required to compare two equal combinations
+    private List<Card> highestCards;
+
     public PokerHand(String pokerHand) {
         this.pokerHand = parsePokerHand(pokerHand);
 
@@ -29,6 +32,8 @@ public class PokerHand {
 
         if (isStraightFlush()) {
             combination = HandCombination.STRAIGHT_FLUSH;
+        } else if (isFourOfAKind()) {
+            combination = HandCombination.FOUR_OF_A_KIND;
         }
 
 
@@ -49,6 +54,23 @@ public class PokerHand {
         int difference = hand.get(0).getFace().getValue() - hand.get(hand.size() - 1).getFace().getValue();
 
         return numberOfSuits == 1 && difference == 4;
+    }
+
+    /**
+     * Checks whether hand is Four of a Kind - An example is four aces or four 3s.
+     *
+     * @return true if hand is Four of a Kind combination and false otherwise
+     */
+    private boolean isFourOfAKind() {
+        var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getFace));
+
+        boolean found = cardGroups.values().stream().anyMatch(g -> g.size() == 4);
+
+        if (found) {
+            highestCards = cardGroups.values().stream().filter(g -> g.size() == 1).findAny().get();
+        }
+
+        return found;
     }
 
 
@@ -80,8 +102,8 @@ public class PokerHand {
      * Parses card face from string
      *
      * @param card string representation of card face one of
-     *                 "2", "3", "4", "5", "6", "7", "8", "9", "10",
-     *                 "J", "Q", "K", "A". Assuming all strings are valid.
+     *             "2", "3", "4", "5", "6", "7", "8", "9", "T",
+     *             "J", "Q", "K", "A". Assuming all strings are valid.
      * @return parsed {@link CardFace} object
      */
     private CardFace parseFace(String card) {
@@ -90,9 +112,12 @@ public class PokerHand {
 
         // parse card face
         try {
-            face = faces[Integer.parseInt(card.substring(0, card.length() == 2 ? 1 : 2)) - 2];
+            face = faces[Integer.parseInt(card.substring(0, 1)) - 2];
         } catch (NumberFormatException e) {
             switch (card.substring(0, 1)) {
+                case "T":
+                    face = faces[8];
+                    break;
                 case "J":
                     face = faces[9];
                     break;
@@ -115,7 +140,7 @@ public class PokerHand {
      * Parses card suit from string
      *
      * @param card string representation of card suit one of
-     *                 "H", "D", "C", "S". Assuming all strings are valid.
+     *             "H", "D", "C", "S". Assuming all strings are valid.
      * @return parsed {@link CardSuit} object
      */
     private CardSuit parseSuit(String card) {
@@ -123,7 +148,7 @@ public class PokerHand {
         CardSuit suit = CardSuit.HEARTS;
 
         // parse suit
-        switch (card.substring(card.length() - 1)) {
+        switch (card.substring(1)) {
             case "H":
                 suit = suits[0];
                 break;

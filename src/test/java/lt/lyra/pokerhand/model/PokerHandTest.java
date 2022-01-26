@@ -19,18 +19,18 @@ public class PokerHandTest {
                 new Card(CardFace.THREE, CardSuit.DIAMONDS),
                 new Card(CardFace.TEN, CardSuit.DIAMONDS),
                 new Card(CardFace.EIGHT, CardSuit.HEARTS));
-        List<Card> h2 = (new PokerHand("AS KD 3D 10D 8H")).getPokerHand();
+        List<Card> h2 = (new PokerHand("AS KD 3D TD 8H")).getPokerHand();
         assertEquals(h1.toString(), h2.toString());
     }
 
     @Test
     public void isPokerHandIsStraightFlush(){
-        String hand = "AS KS QS JS 10S";
+        String hand = "AS KS QS JS TS";
         PokerHand ph = new PokerHand(hand);
 
         assertEquals(ph.getHandCombination(), HandCombination.STRAIGHT_FLUSH);
 
-        hand = "10D 9D 8D 7D 6D";
+        hand = "TD 9D 8D 7D 6D";
         ph = new PokerHand(hand);
         assertEquals(ph.getHandCombination(), HandCombination.STRAIGHT_FLUSH);
     }
@@ -47,4 +47,62 @@ public class PokerHandTest {
         assertNotEquals(ph.getHandCombination(), HandCombination.STRAIGHT_FLUSH);
     }
 
+    @Test
+    public void isPokerHandIsFourOfAKind(){
+        String hand = "AS AD AH AC TS";
+        PokerHand ph = new PokerHand(hand);
+
+        assertEquals(ph.getHandCombination(), HandCombination.FOUR_OF_A_KIND);
+
+        hand = "TD TS TH TC 6D";
+        ph = new PokerHand(hand);
+        assertEquals(ph.getHandCombination(), HandCombination.FOUR_OF_A_KIND);
+    }
+
+    @Test
+    public void isPokerHandIsNotFourOfAKind(){
+        String hand = "3S AD 2H AC TS";
+        PokerHand ph = new PokerHand(hand);
+
+        assertNotEquals(ph.getHandCombination(), HandCombination.FOUR_OF_A_KIND);
+
+        hand = "5D TS TH 4C 6D";
+        ph = new PokerHand(hand);
+        assertNotEquals(ph.getHandCombination(), HandCombination.FOUR_OF_A_KIND);
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
