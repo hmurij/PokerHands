@@ -143,6 +143,30 @@ public class PokerHandTest {
         assertNotEquals(ph.getHandCombination(), HandCombination.STRAIGHT);
     }
 
+    @Test
+    public void isPokerHandIsThreeOfAKindTest(){
+        String hand = "4H 3C QD 3S 3H";
+        PokerHand ph = new PokerHand(hand);
+
+        assertEquals(ph.getHandCombination(), HandCombination.THREE_OF_A_KIND);
+
+        hand = "5D QH QS KH QC";
+        ph = new PokerHand(hand);
+        assertEquals(ph.getHandCombination(), HandCombination.THREE_OF_A_KIND);
+    }
+
+    @Test
+    public void isPokerHandIsNotThreeOfAKindTest(){
+        String hand = "4H 3C QD 2S 3H";
+        PokerHand ph = new PokerHand(hand);
+
+        assertNotEquals(ph.getHandCombination(), HandCombination.THREE_OF_A_KIND);
+
+        hand = "5D TH QS KH QC";
+        ph = new PokerHand(hand);
+        assertNotEquals(ph.getHandCombination(), HandCombination.THREE_OF_A_KIND);
+    }
+
 }
 
 

@@ -17,9 +17,6 @@ public class PokerHand {
     private final List<Card> pokerHand;
     private final HandCombination handCombination;
 
-    // utility field, required to compare two equal combinations
-    private List<Card> highestCards;
-
     public PokerHand(String pokerHand) {
         this.pokerHand = parsePokerHand(pokerHand);
 
@@ -40,6 +37,8 @@ public class PokerHand {
             combination = HandCombination.FLUSH;
         } else if (isStraight()) {
             combination = HandCombination.STRAIGHT;
+        } else if (isThreeOfAKind()) {
+            combination = HandCombination.THREE_OF_A_KIND;
         }
 
 
@@ -79,13 +78,7 @@ public class PokerHand {
     private boolean isFourOfAKind() {
         var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getFace));
 
-        boolean found = cardGroups.values().stream().anyMatch(g -> g.size() == 4);
-
-        if (found) {
-            highestCards = cardGroups.values().stream().filter(g -> g.size() == 1).findAny().get();
-        }
-
-        return found;
+        return cardGroups.values().stream().anyMatch(g -> g.size() == 4);
     }
 
     /**
@@ -100,12 +93,7 @@ public class PokerHand {
         boolean threeOfAKind = cardGroups.values().stream().anyMatch(g -> g.size() == 3);
         boolean pair = cardGroups.values().stream().anyMatch(g -> g.size() == 2);
 
-        if (threeOfAKind && pair) {
-            highestCards = new ArrayList<>(pokerHand);
-            highestCards.sort(Comparator.reverseOrder());
-        }
-
-        return threeOfAKind && pair;
+         return threeOfAKind && pair;
     }
 
     /**
@@ -115,16 +103,7 @@ public class PokerHand {
      * @return true if hand is Flush combination and false otherwise
      */
     private boolean isFlush() {
-        var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getSuit));
-
-        boolean found = cardGroups.values().size() == 1;
-
-        if (found) {
-            highestCards = new ArrayList<>(pokerHand);
-            highestCards.sort(Comparator.reverseOrder());
-        }
-
-        return found;
+        return pokerHand.stream().collect(Collectors.groupingBy(Card::getSuit)).size() == 1;
     }
 
     /**
@@ -146,13 +125,15 @@ public class PokerHand {
             }
         }
 
-        boolean found = numberOfSuits > 1 && straight;
+        return numberOfSuits > 1 && straight;
+    }
 
-        if (found) {
-            highestCards = hand;
-        }
+    private boolean isThreeOfAKind(){
+        var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getFace));
+        boolean threeOfAKind = cardGroups.values().stream().anyMatch(g -> g.size() == 3);
+        boolean twoCards = cardGroups.values().stream().filter(g -> g.size() == 1).toArray().length == 2;
 
-        return found;
+        return threeOfAKind && twoCards;
     }
 
 
