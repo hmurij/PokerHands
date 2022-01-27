@@ -39,6 +39,8 @@ public class PokerHand {
             combination = HandCombination.STRAIGHT;
         } else if (isThreeOfAKind()) {
             combination = HandCombination.THREE_OF_A_KIND;
+        } else if (isTwoPairs()) {
+            combination = HandCombination.TWO_PAIRS;
         }
 
 
@@ -128,6 +130,11 @@ public class PokerHand {
         return numberOfSuits > 1 && straight;
     }
 
+    /**
+     * Checks whether hand is Three of a Kind -  three cards of the same rank, and the other two cards
+     * each of a different rank, such as three jacks, a seven, and a four.
+     * @return true if Three of a Kind and false otherwise
+     */
     private boolean isThreeOfAKind(){
         var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getFace));
         boolean threeOfAKind = cardGroups.values().stream().anyMatch(g -> g.size() == 3);
@@ -135,6 +142,18 @@ public class PokerHand {
 
         return threeOfAKind && twoCards;
     }
+
+    /**
+     * Checks whether hand is Two Pairs - pair of one rank and another pair of a different rank, plus any
+     * fifth card of a different rank, such as Q, Q, 7, 7, 4.
+     * @return true if Two Pairs and false otherwise
+     */
+    private boolean isTwoPairs(){
+        return pokerHand.stream().collect(Collectors.groupingBy(Card::getFace))
+                .values().stream().filter(g -> g.size() == 2).toArray().length == 2;
+    }
+
+
 
 
     /**

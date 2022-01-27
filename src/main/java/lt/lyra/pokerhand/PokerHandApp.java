@@ -27,11 +27,11 @@ public class PokerHandApp {
             PokerHand p1 = new PokerHand(h.substring(0 , h.length() / 2));
             PokerHand p2 = new PokerHand(h.substring(h.length() / 2).trim());
 
-            if(p1.getHandCombination() == HandCombination.THREE_OF_A_KIND){
+            if(p1.getHandCombination() == HandCombination.TWO_PAIRS){
                 System.out.println(h.substring(0 , h.length() / 2));
             }
 
-            if(p2.getHandCombination() == HandCombination.THREE_OF_A_KIND){
+            if(p2.getHandCombination() == HandCombination.TWO_PAIRS){
                 System.out.println(h.substring(h.length() / 2).trim());
             }
 
