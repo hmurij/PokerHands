@@ -13,12 +13,13 @@ import java.util.stream.Collectors;
 /**
  * Class PokerHand represents player's poker hand. Poker hand parsed from String object passed
  * to constructor with one parameter in format "AS KD 3D JD 8H"
+ * Implements Comparable interface for convenient comparing of two poker hands.
  */
-public class PokerHand {
+public class PokerHand implements Comparable<PokerHand> {
     private final List<Card> pokerHand;
     private final HandCombination handCombination;
 
-    // utility hand, to compare hand in case of equal combination
+    // utility hand, to compare hands in case of equal combination
     private List<Card> highestCards;
 
     public PokerHand(String pokerHand) {
@@ -28,6 +29,10 @@ public class PokerHand {
 
     }
 
+    /**
+     * Evaluates poker hand.
+     * @return poker hand combination
+     */
     private HandCombination evaluateHand() {
         HandCombination combination = HandCombination.NO_PAIR;
 
@@ -49,6 +54,7 @@ public class PokerHand {
             combination = HandCombination.ONE_PAIR;
         }
 
+        // initialize highestCard utility field
         if (combination == HandCombination.NO_PAIR || combination == HandCombination.STRAIGHT_FLUSH ||
                 combination == HandCombination.STRAIGHT || combination == HandCombination.FLUSH) {
             highestCards = new ArrayList<>(pokerHand);
@@ -169,7 +175,6 @@ public class PokerHand {
             highestCards = cardGroups.values().stream().filter(g -> g.size() == 3).findAny().get();
             highestCards.addAll(cardGroups.values().stream().filter(g -> g.size() == 1)
                     .flatMap(Collection::stream).sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
-            System.out.println(highestCards);
         }
 
         return threeOfAKind && twoCards;
@@ -315,6 +320,10 @@ public class PokerHand {
         return List.copyOf(pokerHand);
     }
 
+    public List<Card> getHighestCards() {
+        return List.copyOf(highestCards);
+    }
+
     public HandCombination getHandCombination() {
         return handCombination;
     }
@@ -324,6 +333,24 @@ public class PokerHand {
         return "PokerHand{" +
                 "pokerHand=" + pokerHand +
                 '}';
+    }
+
+    @Override
+    public int compareTo(PokerHand pokerHand2) {
+        int result = Integer.compare(handCombination.getValue(), pokerHand2.getHandCombination().getValue());
+
+        if (result == 0) {
+            for (int i = 0; i < highestCards.size(); i++) {
+                result = highestCards.get(i).compareTo(pokerHand2.getHighestCards().get(i));
+
+                if (result != 0) {
+                    break;
+                }
+            }
+
+        }
+
+        return result;
     }
 }
 

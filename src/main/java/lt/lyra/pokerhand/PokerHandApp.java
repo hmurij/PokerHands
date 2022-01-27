@@ -1,7 +1,6 @@
 package lt.lyra.pokerhand;
 
 import lt.lyra.pokerhand.model.PokerHand;
-import lt.lyra.pokerhand.type.HandCombination;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,23 +21,41 @@ public class PokerHandApp {
 
     public static void main(String[] args) {
 
-        pokerHands.forEach(h -> {
-//            System.out.println("p1: " + h.substring(0 , h.length() / 2) + " p2: " + h.substring(h.length()/2).trim());
-            PokerHand p1 = new PokerHand(h.substring(0 , h.length() / 2));
-            PokerHand p2 = new PokerHand(h.substring(h.length() / 2).trim());
+            int p1Wins = 0;
+            int p2Wins = 0;
+            int draws = 0;
 
-            if(p1.getHandCombination() == HandCombination.THREE_OF_A_KIND){
-                System.out.println(h.substring(0 , h.length() / 2));
+            for(String h: pokerHands) {
+
+
+                PokerHand p1 = new PokerHand(h.substring(0, h.length() / 2));
+                PokerHand p2 = new PokerHand(h.substring(h.length() / 2).trim());
+
+                int result = p1.compareTo(p2);
+
+                System.out.println("p1: " + h.substring(0, h.length() / 2));
+                System.out.println("p1: " + p1.getHandCombination());
+
+                System.out.println("p2: " + h.substring(h.length() / 2).trim());
+                System.out.println("p2: " + p2.getHandCombination());
+                System.out.println("---------------------------------------------");
+
+                if (result == -1) {
+                    System.out.println("p2 wins");
+                    p2Wins++;
+                } else if (result == 0) {
+                    draws++;
+                    System.out.println("draw");
+                } else if (result == 1) {
+                    p1Wins++;
+                    System.out.println("p1 wins");
+                }
+                System.out.println();
+
             }
 
-            if(p2.getHandCombination() == HandCombination.THREE_OF_A_KIND){
-                System.out.println(h.substring(h.length() / 2).trim());
-            }
-
-
-
-//            System.out.println();
-        });
+        System.out.println("----------------------------------------------------------------");
+        System.out.println("Total: p1 wins: " + p1Wins + " p2 wins: " + p2Wins + " draws: " + draws);
 
     }
 

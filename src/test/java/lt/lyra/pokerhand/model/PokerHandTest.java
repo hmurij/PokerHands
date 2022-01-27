@@ -215,6 +215,54 @@ public class PokerHandTest {
         assertNotEquals(ph.getHandCombination(), HandCombination.ONE_PAIR);
     }
 
+    @Test
+    public void isPokerHandIsNoPairTest(){
+        String hand = "4S 7H QS 3C 2H";
+        PokerHand ph = new PokerHand(hand);
+
+        assertEquals(ph.getHandCombination(), HandCombination.NO_PAIR);
+
+        hand = "JH 2D KS QD AC";
+        ph = new PokerHand(hand);
+        assertEquals(ph.getHandCombination(), HandCombination.NO_PAIR);
+    }
+
+    @Test
+    public void isPokerHandIsNotNoPairTest(){
+        String hand = "4S 7H QS 3C 3H";
+        PokerHand ph = new PokerHand(hand);
+
+        assertNotEquals(ph.getHandCombination(), HandCombination.NO_PAIR);
+
+        hand = "JH 2D KS JD JC";
+        ph = new PokerHand(hand);
+        assertNotEquals(ph.getHandCombination(), HandCombination.NO_PAIR);
+    }
+
+    @Test
+    public void compareToTestLess() {
+        PokerHand p1 = new PokerHand("5S 8D TH 6C 9D");
+        PokerHand p2 = new PokerHand("7D KH 8C 9S 6D");
+
+        assertEquals(p1.compareTo(p2), -1);
+    }
+
+    @Test
+    public void compareToTestEqual() {
+        PokerHand p1 = new PokerHand("5S 8D TH 6C 9D");
+        PokerHand p2 = new PokerHand("TD 5H 8C 9S 6D");
+
+        assertEquals(p1.compareTo(p2), 0);
+    }
+
+    @Test
+    public void compareToTestGreater() {
+        PokerHand p1 = new PokerHand("5D KC 3H 5S AC");
+        PokerHand p2 = new PokerHand("4S 7H QS 4C 2H");
+
+        assertEquals(p1.compareTo(p2), 1);
+    }
+
 }
 
 
