@@ -5,6 +5,7 @@ import lt.lyra.pokerhand.type.CardSuit;
 import lt.lyra.pokerhand.type.HandCombination;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,9 @@ import java.util.stream.Collectors;
 public class PokerHand {
     private final List<Card> pokerHand;
     private final HandCombination handCombination;
+
+    // utility hand, to compare hand in case of equal combination
+    private List<Card> highestCards;
 
     public PokerHand(String pokerHand) {
         this.pokerHand = parsePokerHand(pokerHand);
@@ -41,8 +45,15 @@ public class PokerHand {
             combination = HandCombination.THREE_OF_A_KIND;
         } else if (isTwoPairs()) {
             combination = HandCombination.TWO_PAIRS;
+        } else if (isOnePair()) {
+            combination = HandCombination.ONE_PAIR;
         }
 
+        if (combination == HandCombination.NO_PAIR || combination == HandCombination.STRAIGHT_FLUSH ||
+                combination == HandCombination.STRAIGHT || combination == HandCombination.FLUSH) {
+            highestCards = new ArrayList<>(pokerHand);
+            highestCards.sort(Comparator.reverseOrder());
+        }
 
         return combination;
     }
@@ -80,7 +91,15 @@ public class PokerHand {
     private boolean isFourOfAKind() {
         var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getFace));
 
-        return cardGroups.values().stream().anyMatch(g -> g.size() == 4);
+        boolean fourOfAKind = cardGroups.values().stream().anyMatch(g -> g.size() == 4);
+
+        if (fourOfAKind) {
+            highestCards = cardGroups.values().stream().filter(g -> g.size() == 4).findAny().get();
+            highestCards.addAll(cardGroups.values().stream().filter(g -> g.size() == 1).findAny().get());
+        }
+
+
+        return fourOfAKind;
     }
 
     /**
@@ -95,7 +114,12 @@ public class PokerHand {
         boolean threeOfAKind = cardGroups.values().stream().anyMatch(g -> g.size() == 3);
         boolean pair = cardGroups.values().stream().anyMatch(g -> g.size() == 2);
 
-         return threeOfAKind && pair;
+        if (threeOfAKind && pair) {
+            highestCards = cardGroups.values().stream().filter(g -> g.size() == 3).findAny().get();
+            highestCards.addAll(cardGroups.values().stream().filter(g -> g.size() == 2).findAny().get());
+        }
+
+        return threeOfAKind && pair;
     }
 
     /**
@@ -133,12 +157,20 @@ public class PokerHand {
     /**
      * Checks whether hand is Three of a Kind -  three cards of the same rank, and the other two cards
      * each of a different rank, such as three jacks, a seven, and a four.
+     *
      * @return true if Three of a Kind and false otherwise
      */
-    private boolean isThreeOfAKind(){
+    private boolean isThreeOfAKind() {
         var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getFace));
         boolean threeOfAKind = cardGroups.values().stream().anyMatch(g -> g.size() == 3);
         boolean twoCards = cardGroups.values().stream().filter(g -> g.size() == 1).toArray().length == 2;
+
+        if (threeOfAKind && twoCards) {
+            highestCards = cardGroups.values().stream().filter(g -> g.size() == 3).findAny().get();
+            highestCards.addAll(cardGroups.values().stream().filter(g -> g.size() == 1)
+                    .flatMap(Collection::stream).sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
+            System.out.println(highestCards);
+        }
 
         return threeOfAKind && twoCards;
     }
@@ -146,14 +178,46 @@ public class PokerHand {
     /**
      * Checks whether hand is Two Pairs - pair of one rank and another pair of a different rank, plus any
      * fifth card of a different rank, such as Q, Q, 7, 7, 4.
+     *
      * @return true if Two Pairs and false otherwise
      */
-    private boolean isTwoPairs(){
-        return pokerHand.stream().collect(Collectors.groupingBy(Card::getFace))
-                .values().stream().filter(g -> g.size() == 2).toArray().length == 2;
+    private boolean isTwoPairs() {
+        var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getFace));
+
+        boolean twoPairs = cardGroups.values().stream().filter(g -> g.size() == 2).toArray().length == 2;
+
+        if (twoPairs) {
+            highestCards = new ArrayList<>();
+            highestCards.addAll(cardGroups.values().stream().filter(g -> g.size() == 2)
+                    .flatMap(Collection::stream).collect(Collectors.toList()));
+            highestCards.sort(Comparator.reverseOrder());
+            highestCards.addAll(cardGroups.values().stream().filter(g -> g.size() == 1).findAny().get());
+        }
+
+        return twoPairs;
     }
 
+    /**
+     * Checks whether had is One Pair -  just one pair with the other three cards being of different rank.
+     * An example is 10, 10, K, 4, 3.
+     *
+     * @return true if One Pair and false otherwise
+     */
+    private boolean isOnePair() {
+        var cardGroups = pokerHand.stream().collect(Collectors.groupingBy(Card::getFace));
+        boolean onePair = cardGroups.values().stream().filter(g -> g.size() == 2).toArray().length == 1;
+        boolean threeCards = cardGroups.values().stream().filter(g -> g.size() == 1).toArray().length == 3;
 
+        if (onePair && threeCards) {
+            highestCards = new ArrayList<>();
+            highestCards.addAll(cardGroups.values().stream().filter(g -> g.size() == 2)
+                    .flatMap(Collection::stream).collect(Collectors.toList()));
+            highestCards.addAll(cardGroups.values().stream().filter(g -> g.size() == 1).
+                    flatMap(Collection::stream).sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
+        }
+
+        return onePair && threeCards;
+    }
 
 
     /**

@@ -49,12 +49,12 @@ public class PokerHandTest {
 
     @Test
     public void isPokerHandIsFourOfAKindTest(){
-        String hand = "AS AD AH AC TS";
+        String hand = "AS TD AH AC AS";
         PokerHand ph = new PokerHand(hand);
 
         assertEquals(ph.getHandCombination(), HandCombination.FOUR_OF_A_KIND);
 
-        hand = "TD TS TH TC 6D";
+        hand = "TD TS 6H TC TD";
         ph = new PokerHand(hand);
         assertEquals(ph.getHandCombination(), HandCombination.FOUR_OF_A_KIND);
     }
@@ -73,12 +73,12 @@ public class PokerHandTest {
 
     @Test
     public void isPokerHandIsFullHouseTest(){
-        String hand = "6H 6S 6C KS KH";
+        String hand = "6H KS 6C KS 6H";
         PokerHand ph = new PokerHand(hand);
 
         assertEquals(ph.getHandCombination(), HandCombination.FULL_HOUSE);
 
-        hand = "TH TD TC KD KS";
+        hand = "TH KD TC KD TS";
         ph = new PokerHand(hand);
         assertEquals(ph.getHandCombination(), HandCombination.FULL_HOUSE);
     }
@@ -189,6 +189,30 @@ public class PokerHandTest {
         hand = "AS 6S QC 6H JD";
         ph = new PokerHand(hand);
         assertNotEquals(ph.getHandCombination(), HandCombination.TWO_PAIRS);
+    }
+
+    @Test
+    public void isPokerHandIsOnePairTest(){
+        String hand = "4S 7H QS 4C 2H";
+        PokerHand ph = new PokerHand(hand);
+
+        assertEquals(ph.getHandCombination(), HandCombination.ONE_PAIR);
+
+        hand = "JH 2D JS QD AC";
+        ph = new PokerHand(hand);
+        assertEquals(ph.getHandCombination(), HandCombination.ONE_PAIR);
+    }
+
+    @Test
+    public void isPokerHandIsNotOnePairTest(){
+        String hand = "4S QH QS 4C 2H";
+        PokerHand ph = new PokerHand(hand);
+
+        assertNotEquals(ph.getHandCombination(), HandCombination.ONE_PAIR);
+
+        hand = "JH 2D TS QD AC";
+        ph = new PokerHand(hand);
+        assertNotEquals(ph.getHandCombination(), HandCombination.ONE_PAIR);
     }
 
 }
